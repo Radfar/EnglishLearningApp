@@ -1,0 +1,10 @@
+Technology stack
+Application architecture
+Repository structure
+Database architecture
+Development environment
+Environment variables
+Authentication strategy
+API/server architecture
+Testing strategy
+Deployment architecture
