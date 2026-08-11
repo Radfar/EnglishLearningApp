@@ -177,11 +177,31 @@ function StatCard({
 }
 
 const navigation = [
-  { label: "Dashboard", icon: DashboardIcon, active: true },
-  { label: "Vocabulary", icon: BookIcon, active: false },
-  { label: "Clusters", icon: LayersIcon, active: false },
-  { label: "Review", icon: ReviewIcon, active: false },
-  { label: "Progress", icon: ProgressIcon, active: false },
+  {
+    label: "Dashboard",
+    icon: DashboardIcon,
+    href: "/",
+  },
+  {
+    label: "Vocabulary",
+    icon: BookIcon,
+    href: "/vocabulary",
+  },
+  {
+    label: "Clusters",
+    icon: LayersIcon,
+    href: "#",
+  },
+  {
+    label: "Review",
+    icon: ReviewIcon,
+    href: "#",
+  },
+  {
+    label: "Progress",
+    icon: ProgressIcon,
+    href: "#",
+  },
 ];
 
 const vocabulary = [
@@ -238,19 +258,21 @@ export default function Home() {
             <div className="space-y-1">
               {navigation.map((item) => {
                 const Icon = item.icon;
+                const isActive = item.href === "/";
 
                 return (
-                  <button
+                  <a
                     key={item.label}
+                    href={item.href}
                     className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
-                      item.active
+                      isActive
                         ? "bg-blue-50 text-blue-700"
                         : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                     }`}
                   >
                     <Icon className="h-5 w-5" />
                     {item.label}
-                  </button>
+                  </a>
                 );
               })}
             </div>
@@ -362,10 +384,13 @@ export default function Home() {
                     </p>
                   </div>
 
-                  <button className="hidden items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-700 sm:flex">
+                  <a
+                    href="/vocabulary"
+                    className="hidden items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-700 sm:flex"
+                  >
                     View all
                     <ArrowRightIcon />
-                  </button>
+                  </a>
                 </div>
 
                 <div className="divide-y divide-slate-100">
@@ -406,10 +431,13 @@ export default function Home() {
                 </div>
 
                 <div className="border-t border-slate-100 px-5 py-4 sm:hidden">
-                  <button className="flex items-center gap-1 text-sm font-medium text-blue-600">
+                  <a
+                    href="/vocabulary"
+                    className="flex items-center gap-1 text-sm font-medium text-blue-600"
+                  >
                     View all
                     <ArrowRightIcon />
-                  </button>
+                  </a>
                 </div>
               </section>
             </div>
