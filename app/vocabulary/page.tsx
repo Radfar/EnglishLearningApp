@@ -70,6 +70,52 @@ function StatusBadge({
   );
 }
 
+function VocabularyCard({ item }: { item: VocabularyItem }) {
+  return (
+    <article className="group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <div className="flex flex-wrap items-center gap-3">
+            <h3 className="text-xl font-semibold tracking-tight text-slate-900">
+              {item.word}
+            </h3>
+
+            <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">
+              {item.category}
+            </span>
+          </div>
+
+          <p className="mt-1 text-xs text-slate-400">
+            Contextual example
+          </p>
+        </div>
+
+        <StatusBadge status={item.status} />
+      </div>
+
+      <div className="mt-5 rounded-xl bg-blue-50/70 p-5">
+        <p className="text-sm font-medium uppercase tracking-wide text-blue-500">
+          Example
+        </p>
+
+        <p className="mt-2 text-base leading-7 text-slate-800">
+          {item.example}
+        </p>
+      </div>
+
+      <div className="mt-5">
+        <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+          Meaning
+        </p>
+
+        <p className="mt-1 text-sm leading-6 text-slate-600">
+          {item.meaning}
+        </p>
+      </div>
+    </article>
+  );
+}
+
 export default function VocabularyPage() {
   const [search, setSearch] = useState("");
 
@@ -83,6 +129,7 @@ export default function VocabularyPage() {
     return vocabulary.filter(
       (item) =>
         item.word.toLowerCase().includes(query) ||
+        item.example.toLowerCase().includes(query) ||
         item.meaning.toLowerCase().includes(query) ||
         item.category.toLowerCase().includes(query) ||
         item.status.toLowerCase().includes(query),
@@ -116,7 +163,7 @@ export default function VocabularyPage() {
           <div className="hidden items-center gap-3 sm:flex">
             <a
               href="/"
-              className="text-sm font-medium text-slate-500 hover:text-slate-900"
+              className="text-sm font-medium text-slate-500 transition hover:text-slate-900"
             >
               Dashboard
             </a>
@@ -132,15 +179,16 @@ export default function VocabularyPage() {
         <div className="mx-auto max-w-7xl">
           <div>
             <p className="text-sm font-medium text-blue-600">
-              Your vocabulary collection
+              Learn through context
             </p>
 
             <h2 className="mt-1 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">
-              Words & expressions
+              Vocabulary
             </h2>
 
             <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
-              Search, review, and organize the vocabulary you are learning.
+              Understand new words through natural examples instead of
+              memorizing isolated definitions.
             </p>
           </div>
 
@@ -154,7 +202,7 @@ export default function VocabularyPage() {
                 type="text"
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
-                placeholder="Search vocabulary..."
+                placeholder="Search words, examples, or meanings..."
                 className="h-11 w-full rounded-xl border border-slate-200 bg-white pl-11 pr-4 text-sm outline-none transition placeholder:text-slate-400 focus:border-blue-400 focus:ring-4 focus:ring-blue-50"
               />
             </div>
@@ -168,84 +216,36 @@ export default function VocabularyPage() {
             </button>
           </div>
 
-          <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[700px] text-left">
-                <thead className="border-b border-slate-100 bg-slate-50">
-                  <tr>
-                    <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-400">
-                      Word
-                    </th>
+          <div className="mt-8 grid gap-5 lg:grid-cols-2">
+            {filteredVocabulary.map((item) => (
+              <VocabularyCard key={item.word} item={item} />
+            ))}
+          </div>
 
-                    <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-400">
-                      Meaning
-                    </th>
+          {filteredVocabulary.length === 0 && (
+            <div className="mt-8 rounded-2xl border border-slate-200 bg-white px-6 py-16 text-center shadow-sm">
+              <p className="text-sm font-medium text-slate-700">
+                No vocabulary matches your search.
+              </p>
 
-                    <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-400">
-                      Category
-                    </th>
-
-                    <th className="px-6 py-4 text-xs font-semibold uppercase tracking-wider text-slate-400">
-                      Status
-                    </th>
-                  </tr>
-                </thead>
-
-                <tbody className="divide-y divide-slate-100">
-                  {filteredVocabulary.map((item) => (
-                    <tr
-                      key={item.word}
-                      className="transition hover:bg-slate-50"
-                    >
-                      <td className="px-6 py-4">
-                        <span className="font-semibold text-slate-900">
-                          {item.word}
-                        </span>
-                      </td>
-
-                      <td className="px-6 py-4 text-sm text-slate-500">
-                        {item.meaning}
-                      </td>
-
-                      <td className="px-6 py-4">
-                        <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">
-                          {item.category}
-                        </span>
-                      </td>
-
-                      <td className="px-6 py-4">
-                        <StatusBadge status={item.status} />
-                      </td>
-                    </tr>
-                  ))}
-
-                  {filteredVocabulary.length === 0 && (
-                    <tr>
-                      <td
-                        colSpan={4}
-                        className="px-6 py-12 text-center text-sm text-slate-500"
-                      >
-                        No vocabulary matches your search.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-
-            <div className="border-t border-slate-100 px-6 py-4">
-              <p className="text-sm text-slate-500">
-                Showing{" "}
-                <span className="font-medium text-slate-700">
-                  {filteredVocabulary.length}
-                </span>{" "}
-                of{" "}
-                <span className="font-medium text-slate-700">
-                  {vocabulary.length}
-                </span>{" "}
-                words
+              <p className="mt-1 text-sm text-slate-400">
+                Try another word, example, or meaning.
               </p>
             </div>
+          )}
+
+          <div className="mt-6">
+            <p className="text-sm text-slate-500">
+              Showing{" "}
+              <span className="font-medium text-slate-700">
+                {filteredVocabulary.length}
+              </span>{" "}
+              of{" "}
+              <span className="font-medium text-slate-700">
+                {vocabulary.length}
+              </span>{" "}
+              vocabulary items
+            </p>
           </div>
         </div>
       </section>

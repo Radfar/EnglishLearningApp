@@ -1,5 +1,6 @@
 export type VocabularyItem = {
   word: string;
+  example: string;
   meaning: string;
   category: string;
   status: "Learning" | "Review" | "Mastered";
@@ -8,49 +9,65 @@ export type VocabularyItem = {
 export const vocabulary: VocabularyItem[] = [
   {
     word: "mitigate",
-    meaning: "make something less severe",
+    example:
+      "The company took several steps to mitigate the financial risk.",
+    meaning: "to make something less severe, harmful, or difficult",
     category: "Academic",
     status: "Learning",
   },
   {
     word: "dwindle",
-    meaning: "become gradually smaller",
+    example:
+      "Our savings began to dwindle after several unexpected expenses.",
+    meaning: "to gradually become smaller or less",
     category: "General",
     status: "Review",
   },
   {
     word: "allocate",
-    meaning: "distribute for a specific purpose",
+    example:
+      "The company allocated more money to employee training this year.",
+    meaning: "to distribute something for a particular purpose",
     category: "Academic",
     status: "Learning",
   },
   {
     word: "dubious",
-    meaning: "uncertain or doubtful",
+    example:
+      "I was dubious about the offer because the details were unclear.",
+    meaning: "feeling uncertain or doubtful about something",
     category: "General",
     status: "Mastered",
   },
   {
     word: "stimulate",
-    meaning: "encourage activity or growth",
+    example:
+      "The government introduced new programs to stimulate the local economy.",
+    meaning: "to encourage activity, growth, or development",
     category: "Academic",
     status: "Learning",
   },
   {
     word: "deplete",
-    meaning: "use up a supply",
+    example:
+      "The long winter can quickly deplete the city's salt supplies.",
+    meaning: "to use up most or all of something",
     category: "Academic",
     status: "Learning",
   },
   {
     word: "diminish",
-    meaning: "become or make less",
+    example:
+      "The pain gradually diminished after the treatment.",
+    meaning: "to become or make something less",
     category: "General",
     status: "Mastered",
   },
   {
     word: "trigger",
-    meaning: "cause something to happen",
+    example:
+      "The announcement triggered a strong reaction from employees.",
+    meaning: "to cause something to happen",
     category: "General",
     status: "Review",
   },
