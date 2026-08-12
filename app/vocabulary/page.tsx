@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { vocabulary, type VocabularyItem } from "@/data/vocabulary";
 
@@ -87,6 +88,31 @@ function StatusBadge({
   );
 }
 
+function HighlightWord({
+  example,
+  word,
+}: {
+  example: string;
+  word: string;
+}) {
+  const escapedWord = word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const parts = example.split(new RegExp(`(${escapedWord})`, "gi"));
+
+  return (
+    <>
+      {parts.map((part, index) =>
+        part.toLowerCase() === word.toLowerCase() ? (
+          <strong key={index} className="font-semibold text-slate-900">
+            {part}
+          </strong>
+        ) : (
+          <span key={index}>{part}</span>
+        ),
+      )}
+    </>
+  );
+}
+
 const filters: Filter[] = ["All", "Learning", "Review", "Mastered"];
 
 export default function VocabularyPage() {
@@ -125,13 +151,13 @@ export default function VocabularyPage() {
       <header className="border-b border-slate-200 bg-white">
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-5 sm:px-8">
           <div className="flex items-center gap-4">
-            <a
+            <Link
               href="/"
               className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white transition hover:bg-blue-700"
               aria-label="Back to dashboard"
             >
               <ArrowLeftIcon />
-            </a>
+            </Link>
 
             <div>
               <p className="text-xs font-medium text-slate-400">
@@ -145,12 +171,12 @@ export default function VocabularyPage() {
           </div>
 
           <div className="hidden items-center gap-3 sm:flex">
-            <a
+            <Link
               href="/"
               className="text-sm font-medium text-slate-500 transition hover:text-slate-900"
             >
               Dashboard
-            </a>
+            </Link>
 
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-700">
               A
@@ -193,6 +219,7 @@ export default function VocabularyPage() {
                     }`}
                   >
                     {filter}
+
                     <span
                       className={`ml-1.5 text-xs ${
                         isActive ? "text-blue-100" : "text-slate-400"
@@ -240,10 +267,10 @@ export default function VocabularyPage() {
 
             <div className="divide-y divide-slate-100">
               {filteredVocabulary.map((item) => (
-                <button
+                <Link
                   key={item.word}
-                  type="button"
-                  className="group block w-full text-left transition hover:bg-blue-50/40"
+                  href={`/vocabulary/${encodeURIComponent(item.word)}`}
+                  className="group block transition hover:bg-blue-50/40"
                 >
                   <div className="grid gap-3 px-5 py-5 md:grid-cols-[180px_minmax(0,1fr)_130px_40px] md:items-center md:gap-4 md:px-6">
                     <div>
@@ -258,7 +285,10 @@ export default function VocabularyPage() {
 
                     <div className="min-w-0">
                       <p className="text-sm leading-6 text-slate-700">
-                        {item.example}
+                        <HighlightWord
+                          example={item.example}
+                          word={item.word}
+                        />
                       </p>
 
                       <p className="mt-1 text-xs leading-5 text-slate-400 md:hidden">
@@ -284,7 +314,7 @@ export default function VocabularyPage() {
                       {item.meaning}
                     </p>
                   </div>
-                </button>
+                </Link>
               ))}
 
               {filteredVocabulary.length === 0 && (
