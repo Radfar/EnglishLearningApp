@@ -10,65 +10,65 @@ export const vocabulary: VocabularyItem[] = [
   {
     word: "mitigate",
     example:
-      "The company took several steps to mitigate the financial risk.",
-    meaning: "to make something less severe, harmful, or difficult",
-    category: "Academic",
+      "The company introduced new safety measures to mitigate the risk of workplace accidents.",
+    meaning: "To make something less severe, harmful, or serious.",
+    category: "Verb",
     status: "Learning",
   },
   {
     word: "dwindle",
     example:
       "Our savings began to dwindle after several unexpected expenses.",
-    meaning: "to gradually become smaller or less",
-    category: "General",
+    meaning: "To gradually become smaller or less.",
+    category: "Verb",
     status: "Review",
   },
   {
     word: "allocate",
     example:
-      "The company allocated more money to employee training this year.",
-    meaning: "to distribute something for a particular purpose",
-    category: "Academic",
+      "The government allocated additional funding to improve public transportation.",
+    meaning: "To officially give or assign something for a particular purpose.",
+    category: "Verb",
     status: "Learning",
   },
   {
-    word: "dubious",
+    word: "reliable",
     example:
-      "I was dubious about the offer because the details were unclear.",
-    meaning: "feeling uncertain or doubtful about something",
-    category: "General",
+      "We need a reliable supplier that can deliver the material on time.",
+    meaning: "Consistently dependable or trustworthy.",
+    category: "Adjective",
     status: "Mastered",
   },
   {
-    word: "stimulate",
+    word: "overwhelming",
     example:
-      "The government introduced new programs to stimulate the local economy.",
-    meaning: "to encourage activity, growth, or development",
-    category: "Academic",
+      "The amount of information available online can be overwhelming for new learners.",
+    meaning: "Very difficult to deal with because there is too much of something.",
+    category: "Adjective",
     status: "Learning",
   },
   {
-    word: "deplete",
+    word: "feasible",
     example:
-      "The long winter can quickly deplete the city's salt supplies.",
-    meaning: "to use up most or all of something",
-    category: "Academic",
-    status: "Learning",
-  },
-  {
-    word: "diminish",
-    example:
-      "The pain gradually diminished after the treatment.",
-    meaning: "to become or make something less",
-    category: "General",
-    status: "Mastered",
-  },
-  {
-    word: "trigger",
-    example:
-      "The announcement triggered a strong reaction from employees.",
-    meaning: "to cause something to happen",
-    category: "General",
+      "We need to determine whether the proposed automation project is financially feasible.",
+    meaning: "Possible and practical to achieve.",
+    category: "Adjective",
     status: "Review",
+  },
+  {
+    word: "enhance",
+    example:
+      "Adding real examples can enhance the learning experience.",
+    meaning: "To improve something or make it better.",
+    category: "Verb",
+    status: "Learning",
+  },
+  {
+    word: "encounter",
+    example:
+      "You may encounter unfamiliar expressions while watching a Canadian TV show.",
+    meaning: "To experience or come across something unexpectedly.",
+    category: "Verb",
+    status: "Mastered",
   },
 ];
