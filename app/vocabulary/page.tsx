@@ -3,6 +3,8 @@
 import { useMemo, useState } from "react";
 import { vocabulary, type VocabularyItem } from "@/data/vocabulary";
 
+type Filter = "All" | VocabularyItem["status"];
+
 function SearchIcon() {
   return (
     <svg
@@ -50,6 +52,21 @@ function ArrowLeftIcon() {
   );
 }
 
+function ChevronIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      className="h-4 w-4"
+      aria-hidden="true"
+    >
+      <path d="m9 18 6-6-6-6" />
+    </svg>
+  );
+}
+
 function StatusBadge({
   status,
 }: {
@@ -63,78 +80,45 @@ function StatusBadge({
 
   return (
     <span
-      className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${styles[status]}`}
+      className={`inline-flex whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-medium ${styles[status]}`}
     >
       {status}
     </span>
   );
 }
 
-function VocabularyCard({ item }: { item: VocabularyItem }) {
-  return (
-    <article className="group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <div className="flex flex-wrap items-center gap-3">
-            <h3 className="text-xl font-semibold tracking-tight text-slate-900">
-              {item.word}
-            </h3>
-
-            <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">
-              {item.category}
-            </span>
-          </div>
-
-          <p className="mt-1 text-xs text-slate-400">
-            Contextual example
-          </p>
-        </div>
-
-        <StatusBadge status={item.status} />
-      </div>
-
-      <div className="mt-5 rounded-xl bg-blue-50/70 p-5">
-        <p className="text-sm font-medium uppercase tracking-wide text-blue-500">
-          Example
-        </p>
-
-        <p className="mt-2 text-base leading-7 text-slate-800">
-          {item.example}
-        </p>
-      </div>
-
-      <div className="mt-5">
-        <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
-          Meaning
-        </p>
-
-        <p className="mt-1 text-sm leading-6 text-slate-600">
-          {item.meaning}
-        </p>
-      </div>
-    </article>
-  );
-}
+const filters: Filter[] = ["All", "Learning", "Review", "Mastered"];
 
 export default function VocabularyPage() {
+  const [activeFilter, setActiveFilter] = useState<Filter>("All");
   const [search, setSearch] = useState("");
+
+  const counts = useMemo(() => {
+    return {
+      All: vocabulary.length,
+      Learning: vocabulary.filter((item) => item.status === "Learning").length,
+      Review: vocabulary.filter((item) => item.status === "Review").length,
+      Mastered: vocabulary.filter((item) => item.status === "Mastered").length,
+    };
+  }, []);
 
   const filteredVocabulary = useMemo(() => {
     const query = search.trim().toLowerCase();
 
-    if (!query) {
-      return vocabulary;
-    }
+    return vocabulary.filter((item) => {
+      const matchesFilter =
+        activeFilter === "All" || item.status === activeFilter;
 
-    return vocabulary.filter(
-      (item) =>
+      const matchesSearch =
+        !query ||
         item.word.toLowerCase().includes(query) ||
         item.example.toLowerCase().includes(query) ||
         item.meaning.toLowerCase().includes(query) ||
-        item.category.toLowerCase().includes(query) ||
-        item.status.toLowerCase().includes(query),
-    );
-  }, [search]);
+        item.category.toLowerCase().includes(query);
+
+      return matchesFilter && matchesSearch;
+    });
+  }, [activeFilter, search]);
 
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900">
@@ -168,7 +152,7 @@ export default function VocabularyPage() {
               Dashboard
             </a>
 
-            <div className="h-9 w-9 rounded-full bg-blue-100 text-center text-sm font-semibold leading-9 text-blue-700">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-700">
               A
             </div>
           </div>
@@ -187,64 +171,147 @@ export default function VocabularyPage() {
             </h2>
 
             <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
-              Understand new words through natural examples instead of
-              memorizing isolated definitions.
+              Review your words through natural examples and meaningful
+              context.
             </p>
           </div>
 
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="relative w-full sm:max-w-md">
-              <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-                <SearchIcon />
+          <div className="mt-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex overflow-x-auto rounded-xl border border-slate-200 bg-white p-1">
+              {filters.map((filter) => {
+                const isActive = activeFilter === filter;
+
+                return (
+                  <button
+                    key={filter}
+                    type="button"
+                    onClick={() => setActiveFilter(filter)}
+                    className={`whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium transition ${
+                      isActive
+                        ? "bg-blue-600 text-white shadow-sm"
+                        : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
+                    }`}
+                  >
+                    {filter}
+                    <span
+                      className={`ml-1.5 text-xs ${
+                        isActive ? "text-blue-100" : "text-slate-400"
+                      }`}
+                    >
+                      {counts[filter]}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="flex w-full gap-3 lg:w-auto">
+              <div className="relative min-w-0 flex-1 lg:w-80">
+                <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                  <SearchIcon />
+                </div>
+
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                  placeholder="Search vocabulary..."
+                  className="h-11 w-full rounded-xl border border-slate-200 bg-white pl-11 pr-4 text-sm outline-none transition placeholder:text-slate-400 focus:border-blue-400 focus:ring-4 focus:ring-blue-50"
+                />
               </div>
 
-              <input
-                type="text"
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-                placeholder="Search words, examples, or meanings..."
-                className="h-11 w-full rounded-xl border border-slate-200 bg-white pl-11 pr-4 text-sm outline-none transition placeholder:text-slate-400 focus:border-blue-400 focus:ring-4 focus:ring-blue-50"
-              />
+              <button
+                type="button"
+                className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700"
+              >
+                <PlusIcon />
+                <span className="hidden sm:inline">Add Word</span>
+              </button>
             </div>
-
-            <button
-              type="button"
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 text-sm font-medium text-white shadow-sm transition hover:bg-blue-700"
-            >
-              <PlusIcon />
-              Add Word
-            </button>
           </div>
 
-          <div className="mt-8 grid gap-5 lg:grid-cols-2">
-            {filteredVocabulary.map((item) => (
-              <VocabularyCard key={item.word} item={item} />
-            ))}
+          <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <div className="hidden grid-cols-[180px_minmax(0,1fr)_130px_40px] gap-4 border-b border-slate-200 bg-slate-50 px-6 py-3 text-xs font-semibold uppercase tracking-wider text-slate-400 md:grid">
+              <div>Word</div>
+              <div>Example</div>
+              <div>Status</div>
+              <div />
+            </div>
+
+            <div className="divide-y divide-slate-100">
+              {filteredVocabulary.map((item) => (
+                <button
+                  key={item.word}
+                  type="button"
+                  className="group block w-full text-left transition hover:bg-blue-50/40"
+                >
+                  <div className="grid gap-3 px-5 py-5 md:grid-cols-[180px_minmax(0,1fr)_130px_40px] md:items-center md:gap-4 md:px-6">
+                    <div>
+                      <p className="font-semibold text-slate-900">
+                        {item.word}
+                      </p>
+
+                      <p className="mt-1 text-xs text-slate-400">
+                        {item.category}
+                      </p>
+                    </div>
+
+                    <div className="min-w-0">
+                      <p className="text-sm leading-6 text-slate-700">
+                        {item.example}
+                      </p>
+
+                      <p className="mt-1 text-xs leading-5 text-slate-400 md:hidden">
+                        {item.meaning}
+                      </p>
+                    </div>
+
+                    <div>
+                      <StatusBadge status={item.status} />
+                    </div>
+
+                    <div className="hidden text-slate-300 transition group-hover:text-blue-500 md:flex md:justify-end">
+                      <ChevronIcon />
+                    </div>
+                  </div>
+
+                  <div className="px-5 pb-5 md:hidden">
+                    <p className="text-xs font-medium uppercase tracking-wide text-slate-400">
+                      Meaning
+                    </p>
+
+                    <p className="mt-1 text-sm leading-6 text-slate-500">
+                      {item.meaning}
+                    </p>
+                  </div>
+                </button>
+              ))}
+
+              {filteredVocabulary.length === 0 && (
+                <div className="px-6 py-16 text-center">
+                  <p className="text-sm font-medium text-slate-700">
+                    No vocabulary matches your search.
+                  </p>
+
+                  <p className="mt-1 text-sm text-slate-400">
+                    Try another word or change the selected tab.
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
 
-          {filteredVocabulary.length === 0 && (
-            <div className="mt-8 rounded-2xl border border-slate-200 bg-white px-6 py-16 text-center shadow-sm">
-              <p className="text-sm font-medium text-slate-700">
-                No vocabulary matches your search.
-              </p>
-
-              <p className="mt-1 text-sm text-slate-400">
-                Try another word, example, or meaning.
-              </p>
-            </div>
-          )}
-
-          <div className="mt-6">
+          <div className="mt-4 flex items-center justify-between">
             <p className="text-sm text-slate-500">
               Showing{" "}
               <span className="font-medium text-slate-700">
                 {filteredVocabulary.length}
               </span>{" "}
-              of{" "}
-              <span className="font-medium text-slate-700">
-                {vocabulary.length}
-              </span>{" "}
-              vocabulary items
+              words
+            </p>
+
+            <p className="hidden text-xs text-slate-400 sm:block">
+              Select a word to view details
             </p>
           </div>
         </div>
