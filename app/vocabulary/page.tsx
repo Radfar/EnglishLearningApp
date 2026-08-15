@@ -1,21 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
-import { vocabulary, type VocabularyItem } from "@/data/vocabulary";
+import { useEffect, useMemo, useState } from "react";
+import { vocabulary as initialVocabulary, type VocabularyItem } from "@/data/vocabulary";
 
 type Filter = "All" | VocabularyItem["status"];
 
+const STORAGE_KEY = "english-learning-vocabulary";
+
 function SearchIcon() {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      className="h-5 w-5"
-      aria-hidden="true"
-    >
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-5 w-5">
       <circle cx="11" cy="11" r="6.5" />
       <path d="m16 16 5 5" />
     </svg>
@@ -24,14 +19,7 @@ function SearchIcon() {
 
 function PlusIcon() {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      className="h-5 w-5"
-      aria-hidden="true"
-    >
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-5 w-5">
       <path d="M12 5v14M5 12h14" />
     </svg>
   );
@@ -39,14 +27,7 @@ function PlusIcon() {
 
 function ArrowLeftIcon() {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      className="h-5 w-5"
-      aria-hidden="true"
-    >
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-5 w-5">
       <path d="M19 12H5" />
       <path d="m11 18-6-6 6-6" />
     </svg>
@@ -55,24 +36,13 @@ function ArrowLeftIcon() {
 
 function ChevronIcon() {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      className="h-4 w-4"
-      aria-hidden="true"
-    >
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4">
       <path d="m9 18 6-6-6-6" />
     </svg>
   );
 }
 
-function StatusBadge({
-  status,
-}: {
-  status: VocabularyItem["status"];
-}) {
+function StatusBadge({ status }: { status: VocabularyItem["status"] }) {
   const styles = {
     Learning: "bg-blue-50 text-blue-700",
     Review: "bg-amber-50 text-amber-700",
@@ -80,9 +50,7 @@ function StatusBadge({
   };
 
   return (
-    <span
-      className={`inline-flex whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-medium ${styles[status]}`}
-    >
+    <span className={`inline-flex whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-medium ${styles[status]}`}>
       {status}
     </span>
   );
@@ -116,22 +84,52 @@ function HighlightWord({
 const filters: Filter[] = ["All", "Learning", "Review", "Mastered"];
 
 export default function VocabularyPage() {
+  const [items, setItems] = useState<VocabularyItem[]>(initialVocabulary);
   const [activeFilter, setActiveFilter] = useState<Filter>("All");
   const [search, setSearch] = useState("");
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    try {
+      const savedVocabulary = localStorage.getItem(STORAGE_KEY);
+
+      if (savedVocabulary) {
+        const parsedVocabulary = JSON.parse(savedVocabulary);
+
+        if (Array.isArray(parsedVocabulary)) {
+          setItems(parsedVocabulary);
+        }
+      }
+    } catch {
+      console.warn("Could not load saved vocabulary.");
+    } finally {
+      setLoaded(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!loaded) return;
+
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+    } catch {
+      console.warn("Could not save vocabulary.");
+    }
+  }, [items, loaded]);
 
   const counts = useMemo(() => {
     return {
-      All: vocabulary.length,
-      Learning: vocabulary.filter((item) => item.status === "Learning").length,
-      Review: vocabulary.filter((item) => item.status === "Review").length,
-      Mastered: vocabulary.filter((item) => item.status === "Mastered").length,
+      All: items.length,
+      Learning: items.filter((item) => item.status === "Learning").length,
+      Review: items.filter((item) => item.status === "Review").length,
+      Mastered: items.filter((item) => item.status === "Mastered").length,
     };
-  }, []);
+  }, [items]);
 
   const filteredVocabulary = useMemo(() => {
     const query = search.trim().toLowerCase();
 
-    return vocabulary.filter((item) => {
+    return items.filter((item) => {
       const matchesFilter =
         activeFilter === "All" || item.status === activeFilter;
 
@@ -144,7 +142,7 @@ export default function VocabularyPage() {
 
       return matchesFilter && matchesSearch;
     });
-  }, [activeFilter, search]);
+  }, [items, activeFilter, search]);
 
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900">
